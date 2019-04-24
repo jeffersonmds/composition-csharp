@@ -1,0 +1,79 @@
+﻿using System;
+using System.Globalization;
+using Composition.Entities.Enums;
+using System.Collections.Generic;
+using System.Text;
+
+namespace Composition.Entities
+{
+    class Order
+    {
+        public DateTime Moment { get; set; }
+        public OrderStatus Status { get; set; }
+        public Client Client { get; set; }
+        public List<OrderItem> Itens { get; set; } = new List<OrderItem>();
+
+        public Order()
+        {
+        }
+
+        public Order(DateTime moment, OrderStatus status, Client client)
+        {
+            Moment = moment;
+            Status = status;
+            Client = client;
+        }
+
+        public void AddItem(OrderItem item)
+        {
+            Itens.Add(item);
+        }
+
+        public void RemoveItem(OrderItem item)
+        {
+            Itens.Remove(item);
+        }
+
+        public double Total()
+        {
+            double sum = 0.0;
+            foreach(OrderItem order in Itens)
+            {
+                sum += order.SubTotal();
+            }
+            return sum;
+        }
+
+        public override string ToString()
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("ORDER SUMMARY:");
+            sb.Append("Order moment: ");
+            sb.AppendLine(Moment.ToString("dd/MM/yyyy HH:mm:ss"));
+            sb.Append("Order status: ");
+            sb.AppendLine(Status.ToString());
+            sb.Append("Client: ");
+            sb.Append(Client.Name);
+            sb.Append(" (");
+            sb.Append(Client.BirthDate.ToString("dd/MM/yyyy"));
+            sb.Append(") - ");
+            sb.AppendLine(Client.Email);
+            sb.AppendLine("Order items: ");
+
+            foreach(OrderItem item in Itens)
+            {
+                sb.Append(item.Product.Name);
+                sb.Append(", $");
+                sb.Append(item.Product.Price.ToString("F2", CultureInfo.InvariantCulture));
+                sb.Append(", Quantity: ");
+                sb.Append(item.Quantity);
+                sb.Append(", Subtotal: $");
+                sb.AppendLine(item.SubTotal().ToString("F2", CultureInfo.InvariantCulture));
+            }
+            sb.Append("Total price: $");
+            sb.AppendLine(Total().ToString("F2", CultureInfo.InvariantCulture));
+            return sb.ToString();
+        }
+
+    }
+}
